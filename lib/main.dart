@@ -21,24 +21,67 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  String display = "0";
+
   Widget buildTestButton(String label) {
     return Padding(
       padding: const EdgeInsets.all(8),
       child: ElevatedButton(
-        onPressed: () {},
-        child: Text(label, style: const TextStyle(fontSize: 24)),
+        onPressed: () {
+          onButtonPressed(label);
+        },
+        child: Text(
+          label,
+          style: const TextStyle(fontSize: 24, color: Colors.black),
+        ),
       ),
     );
   }
 
-  String display = "0";
+  String evaluate(String expression) {
+    try {
+      final parts = expression.split(RegExp(r'[\+\-\*/]'));
+      final operator = expression.replaceAll(RegExp(r'[0-9]'), '');
+
+      if (parts.length != 2 || operator.length != 1) {
+        return "Err";
+      }
+
+      final num1 = int.parse(parts[0]);
+      final num2 = int.parse(parts[1]);
+
+      switch (operator) {
+        case "+":
+          return (num1 + num2).toString();
+        case "-":
+          return (num1 - num2).toString();
+        case "*":
+          return (num1 * num2).toString();
+        case "/":
+          return (num1 / num2).toString();
+        default:
+          return "Err";
+      }
+    } catch (_) {
+      return "Err";
+    }
+  }
 
   void onButtonPressed(String value) {
     setState(() {
-      if (display == "0") {
-        display = value;
-      } else {
-        display += value;
+      switch (value) {
+        case "C":
+          display = "0";
+          break;
+        case "=":
+          display = evaluate(display);
+          break;
+        default:
+          if (display == "0" || display == "Err") {
+            display = value;
+          } else {
+            display += value;
+          }
       }
     });
   }
@@ -61,19 +104,29 @@ class _HomeScreenState extends State<HomeScreen> {
           Expanded(
             flex: 3,
             child: Container(
-              color: Colors.lightBlue,
+              color: Colors.black,
               child: GridView.count(
-                crossAxisCount: 3,
+                crossAxisCount: 4,
                 children: [
                   buildTestButton("7"),
                   buildTestButton("8"),
                   buildTestButton("9"),
+                  buildTestButton("/"),
+
                   buildTestButton("4"),
                   buildTestButton("5"),
                   buildTestButton("6"),
+                  buildTestButton("*"),
+
                   buildTestButton("1"),
                   buildTestButton("2"),
                   buildTestButton("3"),
+                  buildTestButton("-"),
+
+                  buildTestButton("C"),
+                  buildTestButton("0"),
+                  buildTestButton("="),
+                  buildTestButton("+"),
                 ],
               ),
             ),
